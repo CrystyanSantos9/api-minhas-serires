@@ -4,6 +4,10 @@ const app = express()
 const { default: mongoose } = require('mongoose')
 const jwt = require('jsonwebtoken')
 const jwtSecret = process.env.JWT_SECRET || 'vegetaABC123'
+
+const cors = require('cors')
+
+//Model
 const User = require('./models/user')
 
 
@@ -21,10 +25,27 @@ const mongo = process.env.MONGO || 'mongodb://172.19.0.2/api-minhas-series'
 //identificar formato de entrada de dados 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true}))
+// app.use(cors())
+// app.use(cors({
+//     origin: (origin, calback)=>{
+//         if(origin === 'http://server2:8080'){
+//             calback(null, true)
+//         }else{
+//             calback(new Error('Origin not allowed by cors'))
+//         }
+//     },
+// }))
+app.use((req, res, next)=>{
+    res.header("Access-Control-Allow-Origin", "http://server2:8080")
+    res.header("Access-Control-Allow-Methods", "PUT")
+    app.use(cors())
+    next()
+})
 
 //ROTAS
 const series = require('./routes/series')
 const users = require('./routes/users')
+const { application } = require('express')
 
 //USANDO ROTAS
 app.use('/series', series)
