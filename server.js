@@ -2,8 +2,7 @@
 const express = require('express')
 const app = express()
 const { default: mongoose } = require('mongoose')
-const jwt = require('jsonwebtoken')
-const jwtSecret = process.env.JWT_SECRET || 'vegetaABC123'
+
 
 const cors = require('cors')
 
@@ -43,37 +42,15 @@ app.use((req, res, next)=>{
 })
 
 //ROTAS
+const auth = require('./routes/auth')
 const series = require('./routes/series')
 const users = require('./routes/users')
 const { application } = require('express')
 
 //USANDO ROTAS
+app.use('/auth', auth)
 app.use('/series', series)
 app.use('/users', users)
-
-app.post('/auth', async(req, res)=>{
-    const user = req.body
-    const IsUserIndDB = await User.findOne({username: user.username })
-    if(IsUserIndDB){
-        if(IsUserIndDB.password === user.password){
-            const payload = {
-                userId: IsUserIndDB._id,
-                username: IsUserIndDB.name,
-                roles: IsUserIndDB.roles,
-            }
-            jwt.sign(payload, jwtSecret, (err, token)=>{
-                res.send({
-                    success: true, 
-                    token: token 
-                })
-            })
-        }else{
-            res.send({ success: false, message: 'wrong credentials, try again later...'})
-        }
-    }else{
-        res.send({ success: false, message: 'wrong credentials, try again later...'})
-    }
-})
 
 //Usuários iniciais para lidar do mongodb 
 const createInitialUsers = async ()=>{
@@ -82,13 +59,16 @@ const createInitialUsers = async ()=>{
     if(total === 0){
         const user = new User({
             username: 'admin', 
+            email: 'admin@local.com', 
             password: '123456',
             roles: ['restrito', 'admin']
         })
+
         await user.save()
 
         const user2 = new User({
             username: 'restrito', 
+            email: 'restrito@local.com', 
             password: '123456',
             roles: ['restrito']
         })
