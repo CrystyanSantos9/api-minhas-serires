@@ -32,7 +32,7 @@
   "securityDefinitions": {
     "api_key": {
       "type": "apiKey",
-      "name": "token",
+      "name": "x-access-token",
       "in": "header",
       "scopes":{
         "restrito": "restrito access",
@@ -68,10 +68,10 @@
         "description": "Create a session with valid user",
         "parameters": [
           {
-            "name": "email",
+            "name": "user",
             "in": "body",
             "required": true,
-            "type": "string",
+            "type": "object",
             "example": "user@domail.com"
           },
           {
@@ -86,7 +86,6 @@
       }
     },
     "/series": {
- 
       "get": {
         "tags": [
           "series"
@@ -119,7 +118,12 @@
           "501": {
             "description": "Not Implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "api_key": ["restrito"]
+          }
+        ]
       },
       "post": {
         "tags": [

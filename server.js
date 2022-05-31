@@ -86,6 +86,6 @@ mongoose
         //criando usuarios
         createInitialUsers()
         //fazendo o servidor escutar após a conexão com o banco 
-        app.listen(PORT, HOST, ()=> console.log('listening on ...'))
+        app.listen(PORT, HOST, ()=> console.log(`Listening on ${PORT}`))
     })
     .catch( e => console.log(e))
