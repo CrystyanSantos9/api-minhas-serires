@@ -1,0 +1,351 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "REST API",
+    "description": "Documentação referente a API Minhas Séries"
+  },
+  "definitions": {
+    "Serie": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum":[
+            "to-watch", 
+            "watching",
+             "watched"
+            ]
+        },
+        "comments":{
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "token",
+      "in": "header",
+      "scopes":{
+        "restrito": "restrito access",
+        "admin": "admin"
+      }
+    }
+  },
+  "host": "grafana.localhost.com:3005",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "series",
+      "description": "Tudo sobre minhas séries preferidas"
+    },
+    {
+      "name": "users",
+      "description": "Tudo sobre usuários"
+    },
+    {
+      "name": "auth",
+      "description": "Autenticação de usuários"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "description": "Create a session with valid user",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "required": true,
+            "type": "string",
+            "example": "user@domail.com"
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "required": true,
+            "type": "string",
+            "example": "xf10FF2021!"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/series": {
+ 
+      "get": {
+        "tags": [
+          "series"
+        ],
+        "summary": "Lista todas as séries",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "succesful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Serie"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "501": {
+            "description": "Not Implemented"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "series"
+        ],
+        "summary": "Cria uma nova série",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "serie",
+            "description": "Informações sobre a série que será salva no banco",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Serie"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "501": {
+            "description": "Not Implemented"
+          }
+        },
+        "security": [
+          {
+            "api_key": ["restrito"]
+          }
+        ]
+      }
+    },
+    "/series/{id}": {
+      "delete": {
+        "tags": [
+          "series"
+        ],
+        "summary": "Remove uma série",
+        "parameters": [
+          {
+            "description": "id da série que será removida",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "series"
+        ],
+        "summary": "Lista uma série",
+        "parameters": [
+          {
+            "description": "id da série que será listada",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successfull operation",
+            "schema":{
+              "$ref":"#/definitions/Serie"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": ["restrito"]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "series"
+        ],
+        "summary": "Atualiza uma série",
+        "parameters": [
+          {
+            "description": "id da série que será atualizada",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "serie",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "Nome da minha série"
+                },
+                "status": {
+                  "example": "to-watch"
+                },
+                "comments": {
+                  "example": "a melhor séire de todas"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successfull operation",
+            "schema":{
+              "$ref":"#/definitions/Serie"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/users/": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/users/all/documents": {
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

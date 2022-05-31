@@ -2,6 +2,8 @@
 const express = require('express')
 const app = express()
 const { default: mongoose } = require('mongoose')
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger/swagger_output.json');
 
 
 const cors = require('cors')
@@ -22,8 +24,9 @@ const mongo = process.env.MONGO || 'mongodb://172.19.0.2/api-minhas-series'
 
 //middlewares
 //identificar formato de entrada de dados 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(express.json())
-app.use(express.urlencoded({ extended: true}))
+app.use(express.urlencoded({ extended: false }))
 // app.use(cors())
 // app.use(cors({
 //     origin: (origin, calback)=>{
@@ -35,8 +38,8 @@ app.use(express.urlencoded({ extended: true}))
 //     },
 // }))
 app.use((req, res, next)=>{
-    res.header("Access-Control-Allow-Origin", "http://server2:8080")
-    res.header("Access-Control-Allow-Methods", "PUT")
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Methods", ["GET","POST", "PUT", "PATCH"])
     app.use(cors())
     next()
 })
