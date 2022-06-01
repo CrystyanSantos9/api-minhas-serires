@@ -1,16 +1,11 @@
 //chama o objeto de criaçaõ do servidor
-const express = require('express')
-const app = express()
+
 const { default: mongoose } = require('mongoose')
-const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger/swagger_output.json');
 
+const app = require('./app')
 
-const cors = require('cors')
-
-//Model
+//MODELS
 const User = require('./models/user')
-
 
 //em versõs mais antigas 
 //mongoose.Promise = global.Promise 
@@ -21,39 +16,6 @@ const HOST = process.env.HOST ||  '0.0.0.0'
 //definindo url do mongo
 // const mongo = process.env.MONGO || 'mongodb://localhost/api-minhas-series'
 const mongo = process.env.MONGO || 'mongodb://172.19.0.2/api-minhas-series'
-
-//middlewares
-//identificar formato de entrada de dados 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-// app.use(cors())
-// app.use(cors({
-//     origin: (origin, calback)=>{
-//         if(origin === 'http://server2:8080'){
-//             calback(null, true)
-//         }else{
-//             calback(new Error('Origin not allowed by cors'))
-//         }
-//     },
-// }))
-app.use((req, res, next)=>{
-    res.header("Access-Control-Allow-Origin", "*")
-    res.header("Access-Control-Allow-Methods", ["GET","POST", "PUT", "PATCH"])
-    app.use(cors())
-    next()
-})
-
-//ROTAS
-const auth = require('./routes/auth')
-const series = require('./routes/series')
-const users = require('./routes/users')
-const { application } = require('express')
-
-//USANDO ROTAS
-app.use('/auth', auth)
-app.use('/series', series)
-app.use('/users', users)
 
 //Usuários iniciais para lidar do mongodb 
 const createInitialUsers = async ()=>{
