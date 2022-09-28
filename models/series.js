@@ -15,7 +15,7 @@ const SeriesSchema = mongoose.Schema({
         type: String,
         enumvalues: ['to-watch', 'watching', 'watched']
     },
-    comments: [CommentSchema]
+    comments: [String]
 })
 
 //criando o banco definindo o nome e o eschema dos dados

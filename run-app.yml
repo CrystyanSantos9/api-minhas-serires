@@ -1,0 +1,41 @@
+version: "3"
+
+services: 
+
+  api:
+   image: cryssantos9/api-minhas-series:v1 
+   container_name: api-minhas-series
+   depends_on: 
+    - mongodb
+   ports: 
+     - "3005:3005"
+   restart: unless-stopped
+   networks:
+        - minhas-series
+   environment:
+     - "MONGO:${MONGO}"
+   
+   
+
+  mongodb:
+   image: mongo 
+   container_name: mongodb
+   environment: 
+     - PUID=1000
+     - PGID=1000
+   ports: 
+     - "27017:27017"
+   restart: unless-stopped
+   networks:
+        - minhas-series
+   volumes: 
+     - "./mongodb/data:/data/db"
+
+networks:
+ minhas-series:
+   # external: true
+   name: minhas-series
+   driver: bridge
+   driver_opts:
+     com.docker.network.driver.mtu: 1450
+
