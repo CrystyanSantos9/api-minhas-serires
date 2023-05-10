@@ -22,5 +22,10 @@
     "swagger-autogen": "^2.23.1",
     "swagger-ui-express": "^4.6.3",
     "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

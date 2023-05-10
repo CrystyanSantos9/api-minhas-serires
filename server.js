@@ -76,12 +76,14 @@ app.post("/auth", async (req, res) => {
         }
       );
     } else {
+      res.statusCode = 400
       res.send({
         success: false,
         message: "wrong credentials, try again later...",
       });
     }
   } else {
+    res.statusCode = 400
     res.send({
       success: false,
       message: "wrong credentials, try again later...",
