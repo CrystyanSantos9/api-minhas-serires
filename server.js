@@ -34,10 +34,12 @@ app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 //ROTAS
 const series = require("./routes/series");
 const users = require("./routes/users");
+const counts = require("./routes/counts");
 
 //USANDO ROTAS
 app.use("/series", series);
 app.use("/users", users);
+app.use("/counts", counts);
 
 app.post("/auth", async (req, res) => {
   const userSchema = yup.object().shape({
@@ -54,7 +56,7 @@ app.post("/auth", async (req, res) => {
   const IsUserIndDB = await User.findOne({ username: user.username });
 
   if (IsUserIndDB) {
-    const isValid = await IsUserIndDB.checkPassword(user.password)
+    const isValid = await IsUserIndDB.checkPassword(user.password);
     if (isValid) {
       console.log(user.password);
       console.log(IsUserIndDB.password);
@@ -76,14 +78,14 @@ app.post("/auth", async (req, res) => {
         }
       );
     } else {
-      res.statusCode = 400
+      res.statusCode = 400;
       res.send({
         success: false,
         message: "wrong credentials, try again later...",
       });
     }
   } else {
-    res.statusCode = 400
+    res.statusCode = 400;
     res.send({
       success: false,
       message: "wrong credentials, try again later...",
