@@ -2,6 +2,8 @@
 // const express = require("express");
 // const app = express();
 const app = require("./app");
+const http = require("http").Server(app);
+
 const { default: mongoose } = require("mongoose");
 // const jwt = require("jsonwebtoken");
 // const jwtSecret = process.env.JWT_SECRET || "vegetaABC123";
@@ -14,6 +16,7 @@ const { default: mongoose } = require("mongoose");
 
 //Model
 const User = require("./models/user");
+const Count = require("./models/count");
 
 //em versõs mais antigas
 //mongoose.Promise = global.Promise
@@ -94,8 +97,6 @@ const mongo = process.env.MONGO || "mongodb://192.168.1.110/api-minhas-series";
 //   }
 // });
 
-
-
 //Usuários iniciais para lidar do mongodb
 const createInitialUsers = async () => {
   //retorna a quantidade de usuários existentes nesse banco de dados
@@ -117,6 +118,49 @@ const createInitialUsers = async () => {
   }
 };
 
+const socketIO = require("socket.io")(http, {
+  cors: {
+    origin: "<http://localhost:3005>",
+  },
+});
+
+//👇🏻 Add this before the app.get() block
+socketIO.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+
+  const balance = async (listOfCounts) => {
+    const total = await listOfCounts
+      .map((item) => Number(item.value))
+      .reduce((balance, total) => {
+        return balance + total;
+      }, 0);
+
+    return total;
+  };
+
+  socket.on("join", (userId) => {
+    socket.join(userId);
+    console.log("join com userId --->>>", userId);
+  });
+
+  socket.on("newCount", (userId) => {
+    Count.find({})
+      .where(userId)
+      .then((counts) => {
+        return balance(counts);
+      })
+      .then((total) => {
+        console.log("Novo total sendo emitido --->>>", total);
+        socket.to(userId).emit("newCountTotal", total);
+      });
+  });
+
+  socket.on("disconnect", () => {
+    socket.disconnect();
+    console.log("🔥: A user disconnected");
+  });
+});
+
 //conectando o mongo
 mongoose
   .connect(mongo, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -124,6 +168,8 @@ mongoose
     //criando usuarios
     createInitialUsers();
     //fazendo o servidor escutar após a conexão com o banco
-    app.listen(PORT, HOST, () => console.log(`Server on http://${HOST}:3005/`));
+    http.listen(PORT, HOST, () =>
+      console.log(`Server on http://${HOST}:3005/`)
+    );
   })
   .catch((e) => console.log(e));

@@ -1,4 +1,5 @@
 const yup = require("yup");
+const socketClient = require("../socket/client");
 
 const list = async ({ Count }, req, res) => {
   const counts = await Count.find({});
@@ -10,7 +11,7 @@ const create = async ({ Count }, req, res) => {
     return currentDate.split("/").reverse().join("-");
   };
 
-  console.log(req.body);
+  // console.log(req.body);
 
   const countSchema = yup.object().shape({
     date: yup
@@ -35,6 +36,7 @@ const create = async ({ Count }, req, res) => {
     await count.save();
     res.statusCode = 201;
     res.send(count);
+    socketClient.emit("newCount", req.body.user_id);
   } catch (e) {
     res.statusCode = 500;
     res.send({
